@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-dep
+  namespace: cms-ns
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cms-backend
+  template:
+    metadata:
+      labels:
+        app: cms-backend
+    spec:
+      containers:
+      - name: cms-backend-container
+        image: sarojdockerworkspace/cms-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        envFrom:
+          - configMapRef:
+              name: cms-config
+    
+        env:
+          
+
+          - name: FRONT_END_LIVE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: cms-config
+                key: FRONT_END_LIVE_URL
+
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: cms-config
+                key: PORT
+
+          - name: DATABASE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: cms-config
+                key: DATABASE_URI
+
+          - name: JWT_SECRET
+            valueFrom:
+              configMapKeyRef:
+                name: cms-config
+                key: JWT_SECRET
+
+          - name: JWT_EXPIRE_IN
+            valueFrom:
+              configMapKeyRef:
+                name: cms-config
+                key: JWT_EXPIRE_IN
+
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
