@@ -28,6 +28,7 @@ pipeline{
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=cms \
                             -Dsonar.sources=.
+                            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
                         """
                     }
                 }
