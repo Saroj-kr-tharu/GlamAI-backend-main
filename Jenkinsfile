@@ -25,10 +25,10 @@ pipeline{
 
          stage("Install & Test") {
           steps {
-              sh '''
-                  npm install
-                  npm test -- --coverage
-              '''
+              dir('auth') {
+            sh 'npm install'
+            sh 'npm test -- --coverage'
+        }
           }
       }
         
