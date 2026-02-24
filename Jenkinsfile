@@ -1,6 +1,10 @@
 pipeline{
     agent {label "ai" }
 
+    tools {
+        nodejs "Node18"
+    }
+
     stages{
 
         // 1. clone code 
