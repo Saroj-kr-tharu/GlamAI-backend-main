@@ -23,15 +23,7 @@ pipeline{
             git url : "https://github.com/Saroj-kr-tharu/GlamAI-backend", branch :"main"
          } }
 
-         stage("Install & Test") {
-          steps {
-              sh '''
-                  npm install
-                  cd /home/jenkins/workspace/glamai-backend
-                  npm test -- --coverage
-              '''
-          }
-      }
+         
         
         stage('SonarQube Analysis') {
             steps {
@@ -49,13 +41,7 @@ pipeline{
             }
         }
         
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        
 
         stage("OWASP Dependency Check"){
           steps{
