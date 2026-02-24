@@ -25,10 +25,11 @@ pipeline{
 
          stage("Install & Test") {
           steps {
-              dir('auth') {
-            sh 'npm install'
-            sh 'npm test -- --coverage'
-        }
+              sh '''
+                  npm install
+                  cd /home/jenkins/workspace/glamai-backend
+                  npm test -- --coverage
+              '''
           }
       }
         
