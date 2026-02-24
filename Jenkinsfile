@@ -18,6 +18,15 @@ pipeline{
            steps{
             git url : "https://github.com/Saroj-kr-tharu/GlamAI-backend", branch :"main"
          } }
+
+         stage("Install & Test") {
+          steps {
+              sh '''
+                  npm install
+                  npm test -- --coverage
+              '''
+          }
+      }
         
         stage('SonarQube Analysis') {
             steps {
