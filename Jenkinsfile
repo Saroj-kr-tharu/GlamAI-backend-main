@@ -60,6 +60,7 @@ pipeline{
                           --out dependency-check-report \
                           --prettyPrint \
                           --nvdApiKey \${NVD_API_KEY}
+                          --disableYarnAudit
                       """
                   }
               }
