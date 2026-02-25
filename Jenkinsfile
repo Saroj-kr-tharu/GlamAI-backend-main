@@ -20,7 +20,7 @@ pipeline{
 
         stage("Clone Code"){
            steps{
-            git url : "https://github.com/Saroj-kr-tharu/GlamAI-backend", branch :"main"
+            git url : "https://github.com/Saroj-kr-tharu/GlamAI-backend-main", branch :"main"
          } }
 
          
