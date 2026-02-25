@@ -59,8 +59,10 @@ pipeline{
                           --format XML \
                           --out dependency-check-report \
                           --prettyPrint \
-                          --nvdApiKey \${NVD_API_KEY}
-                          --disableYarnAudit
+                          --nvdApiKey ${NVD_API_KEY} \
+                          --disableYarnAudit \
+                          --disableOssIndex \
+                          --disableAssembly
                       """
                   }
               }
