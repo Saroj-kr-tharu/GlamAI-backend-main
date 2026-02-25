@@ -279,7 +279,7 @@ pipeline{
                           <tr>
                             <td style="background:#f1f5f9;color:#6b7280;
                                        text-align:center;padding:15px;font-size:12px;">
-                              Jenkins CI/CD • Todo App
+                              Jenkins CI/CD. ${env.JOB_NAME}
                             </td>
                           </tr>
 

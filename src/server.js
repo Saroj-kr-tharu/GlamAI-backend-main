@@ -42,7 +42,7 @@ app.use(
 
 // 
 app.get("/", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server is running healthy doing done  joker 🚀" });
+  res.status(200).json({ status: "OK", message: "Server is running healthy  🚀" });
 });
 
 // routes

@@ -11,7 +11,7 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white)](https://www.jenkins.io/)
 
----
+---   
 
 *A robust, production-grade Node.js backend service for GlamAI — featuring JWT authentication, image upload & AI-powered analysis, containerized with Docker, orchestrated on Kubernetes, and delivered via a fully automated Jenkins CI/CD pipeline.*
 
