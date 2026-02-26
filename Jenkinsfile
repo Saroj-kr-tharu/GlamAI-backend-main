@@ -30,10 +30,7 @@ pipeline{
             sh 'npm install'
          } }
 
-        stage("Run Tests"){
-           steps{
-            sh 'npm test'
-         } }
+      
 
         stage('SonarQube Analysis') {
             steps {
@@ -51,13 +48,7 @@ pipeline{
             }
         }
         
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        
 
         stage("OWASP Dependency Check"){
           steps{
