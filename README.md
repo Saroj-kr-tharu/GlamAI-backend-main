@@ -11,7 +11,7 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins&logoColor=white)](https://www.jenkins.io/)
 
----   
+---
 
 *A robust, production-grade Node.js backend service for GlamAI — featuring JWT authentication, image upload & AI-powered analysis, containerized with Docker, orchestrated on Kubernetes, and delivered via a fully automated Jenkins CI/CD pipeline.*
 
@@ -21,11 +21,11 @@
 
 ## 📑 Table of Contents
 
-- [Architecture Overview](#-architecture-overview)
+- [System Design](#-system-design)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [API Endpoints](#-api-endpoints)
-- [CI/CD Pipeline (Jenkins)](#-cicd-pipeline-jenkins)
+- [CI/CD Pipeline](#-cicd-pipeline)
 - [Kubernetes Deployment](#-kubernetes-deployment)
 - [Docker Configuration](#-docker-configuration)
 - [Security & Code Quality](#-security--code-quality)
@@ -35,39 +35,13 @@
 
 ---
 
-## 🏗 Architecture Overview
+## 🏗 System Design
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            KUBERNETES CLUSTER                               │
-│                         (KinD — 1 Control Plane + 3 Workers)                │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                        NGINX Ingress Controller                       │  │
-│  │                     (host: 139.59.85.203.nip.io)                      │  │
-│  └──────┬──────────────────────┬──────────────────────┬────────────────-─┘  │
-│         │ /server/*            │ /model/*             │ /*                 │
-│         ▼                      ▼                      ▼                   │
-│  ┌──────────────┐     ┌───────────────┐     ┌──────────────────┐          │
-│  │  Backend API │     │   ML Model    │     │    Frontend      │          │
-│  │   Service    │     │   Service     │     │    Service       │          │
-│  │  (port 3000) │     │  (port 3000)  │     │   (port 80)      │          │
-│  └──────┬───────┘     └───────────────┘     └──────────────────┘          │
-│         │                                                                 │
-│  ┌──────▼───────────────────────────────────────────┐                     │
-│  │            Backend Deployment (2–8 replicas)      │                     │
-│  │          ┌─────────┐  ┌─────────┐                │                     │
-│  │          │  Pod 1   │  │  Pod 2   │  ... (HPA)    │                     │
-│  │          │ Node 20  │  │ Node 20  │               │                     │
-│  │          └─────────┘  └─────────┘                │                     │
-│  └──────────────────────────────────────────────────┘                     │
-│         │                      │                                          │
-│         ▼                      ▼                                          │
-│  ┌──────────────┐     ┌───────────────┐                                   │
-│  │   MongoDB    │     │  ML Model API │                                   │
-│  │  (External)  │     │  (External)   │                                   │
-│  └──────────────┘     └───────────────┘                                   │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+<div align="center">
+
+<img src="public/systemDesign.gif" alt="System Design Architecture" width="100%" />
+
+</div>
 
 ### Request Flow
 
@@ -170,38 +144,23 @@ GlamAI-backend/
 
 ---
 
-## 🔄 CI/CD Pipeline (Jenkins)
+## 🔄 CI/CD Pipeline
 
 The project uses a **Jenkins Declarative Pipeline** that automates the entire build, test, scan, and deploy lifecycle.
 
-### Pipeline Architecture
+<div align="center">
 
-```
-┌─────────────┐    ┌───────────────┐    ┌───────────────┐    ┌──────────────┐
-│  Clone Code │───▶│  SonarQube    │───▶│ Quality Gate  │───▶│   OWASP      │
-│  (GitHub)   │    │  Analysis     │    │  (Pass/Fail)  │    │  Dep Check   │
-└─────────────┘    └───────────────┘    └───────────────┘    └──────┬───────┘
-                                                                    │
-┌─────────────┐    ┌───────────────┐    ┌───────────────┐    ┌──────▼───────┐
-│  K8s Deploy │◀───│  Push Image   │◀───│  Image Scan   │◀───│  Trivy FS    │
-│  Restart    │    │  (DockerHub)  │    │  (Trivy)      │    │  Scan        │
-└──────┬──────┘    └───────────────┘    └───────────────┘    └──────────────┘
-       │
-       ▼
-  ┌──────────────────────────────────────┐
-  │   📧 Email Notification              │
-  │   ✅ Success / ❌ Failure            │
-  │   + Scan Reports as Attachments      │
-  └──────────────────────────────────────┘
-```
+<img src="public/cicd.gif" alt="CI/CD Pipeline" width="100%" />
+
+</div>
 
 ### Pipeline Stages
 
 | #  | Stage                      | Description                                                         |
 |----|----------------------------|---------------------------------------------------------------------|
 | 1  | **Clone Code**             | Pulls latest code from `main` branch on GitHub                     |
-| 2  | **SonarQube Analysis**     | Runs static code analysis for bugs, code smells & vulnerabilities  |
-| 3  | **Quality Gate**           | Waits up to 10 min for SonarQube quality gate — aborts on failure  |
+| 2  | **Install Dependencies**   | Installs Node.js project dependencies                              |
+| 3  | **SonarQube Analysis**     | Runs static code analysis for bugs, code smells & vulnerabilities  |
 | 4  | **OWASP Dependency Check** | Scans project dependencies for known CVEs using NVD API            |
 | 5  | **Trivy FS Scan**          | Scans the entire filesystem for vulnerabilities                    |
 | 6  | **Build Docker Image**     | Builds the production Docker image tagged as `latest`              |
@@ -213,13 +172,13 @@ The project uses a **Jenkins Declarative Pipeline** that automates the entire bu
 
 - **On Success:** Sends an HTML-styled ✅ success email with scan report attachments
 - **On Failure:** Sends an HTML-styled ❌ failure email with scan report attachments
-- Reports attached: `result.json` (Trivy FS), `backend-image-scan.json` (Trivy Image), `dependency-check-report.xml` (OWASP)
+- **Reports attached:** `result.json` (Trivy FS), `backend-image-scan.json` (Trivy Image), `dependency-check-report.xml` (OWASP)
 
 ### Jenkins Requirements
 
 | Requirement               | Details                                    |
 |---------------------------|--------------------------------------------|
-| Agent Label               | `dev`                                      |
+| Agent Label               | `ai`                                       |
 | Credentials               | `dockerHubCreds` (username/password)       |
 |                           | `NVD_API_KEY` (secret text)                |
 | Tools                     | SonarQube Scanner, OWASP Dependency-Check  |
@@ -263,10 +222,10 @@ The application is deployed on a **KinD (Kubernetes in Docker)** cluster with pr
 
 ### Resource Allocation
 
-| Resource | Request  | Limit    |
-|----------|----------|----------|
-| **CPU**  | 200m     | 500m     |
-| **Memory** | 256Mi  | 512Mi    |
+| Resource   | Request  | Limit    |
+|------------|----------|----------|
+| **CPU**    | 200m     | 500m     |
+| **Memory** | 256Mi    | 512Mi    |
 
 ### Horizontal Pod Autoscaler (HPA)
 
@@ -341,16 +300,16 @@ docker run -p 5000:5000 --env-file .env glamai-backend:latest
 
 ## 🔒 Security & Code Quality
 
-| Tool                        | Purpose                                      | Stage            |
-|-----------------------------|----------------------------------------------|------------------|
-| **SonarQube**               | Static analysis (bugs, smells, vulnerabilities) | CI Pipeline    |
-| **OWASP Dependency-Check**  | Scans npm packages for known CVEs            | CI Pipeline      |
-| **Trivy (FS)**              | Filesystem vulnerability scanning            | CI Pipeline      |
-| **Trivy (Image)**           | Docker image vulnerability scanning          | CI Pipeline      |
-| **bcryptjs**                | Password hashing with salt rounds            | Runtime          |
-| **JWT**                     | Stateless token-based authentication         | Runtime          |
-| **Multer**                  | File type & size validation (JPG/PNG, ≤10 MB)| Runtime          |
-| **CORS**                    | Origin-restricted cross-origin requests      | Runtime          |
+| Tool                        | Purpose                                       | Stage           |
+|-----------------------------|-----------------------------------------------|-----------------|
+| **SonarQube**               | Static analysis (bugs, smells, vulnerabilities) | CI Pipeline   |
+| **OWASP Dependency-Check**  | Scans npm packages for known CVEs             | CI Pipeline     |
+| **Trivy (FS)**              | Filesystem vulnerability scanning             | CI Pipeline     |
+| **Trivy (Image)**           | Docker image vulnerability scanning           | CI Pipeline     |
+| **bcryptjs**                | Password hashing with salt rounds             | Runtime         |
+| **JWT**                     | Stateless token-based authentication          | Runtime         |
+| **Multer**                  | File type & size validation (JPG/PNG, ≤10 MB) | Runtime         |
+| **CORS**                    | Origin-restricted cross-origin requests       | Runtime         |
 
 ---
 
@@ -390,8 +349,8 @@ MODEL_API_URL=http://localhost:8000
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Saroj-kr-tharu/GlamAI-backend.git
-cd GlamAI-backend
+git clone https://github.com/Saroj-kr-tharu/GlamAI-backend-main.git
+cd GlamAI-backend-main
 
 # 2. Install dependencies
 npm install
